@@ -3,7 +3,7 @@
 }
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,9 +12,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(to bottom, #000000, #4d2600, #ffcc00);
+            background: linear-gradient(to bottom, #000000, #2c2c2c, #8b6f47);
             color: #fff;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         .container {
@@ -94,70 +94,171 @@
             </form>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script>
-        function enviarCodigo() {
-            var email = document.getElementById('email').value;
-            fetch('@Url.Action("EnviarCodigoRecuperacion", "Acceso")', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('emailSection').style.display = 'none';
-                    document.getElementById('codigoSection').style.display = 'block';
-                } else {
-                    document.getElementById('errorMessage').innerText = data.message;
-                    document.getElementById('errorMessage').style.display = 'block';
-                }
-            });
-        }
-
-        function validarCodigo() {
-            var codigo = document.getElementById('codigo').value;
-            fetch('@Url.Action("VerificarCodigoRecuperacion", "Acceso")', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ codigo: codigo })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('codigoSection').style.display = 'none';
-                    document.getElementById('passwordSection').style.display = 'block';
-                } else {
-                    document.getElementById('errorMessage').innerText = data.message;
-                    document.getElementById('errorMessage').style.display = 'block';
-                }
-            });
-        }
-
-        function cambiarContraseña(event) {
-            event.preventDefault();
-            var newPassword = document.getElementById('newPassword').value;
-            var confirmPassword = document.getElementById('confirmPassword').value;
-            var email = document.getElementById('email').value;
-
-            if (newPassword !== confirmPassword) {
-                alert('Las contraseñas no coinciden');
-                return;
-            }
-
-            fetch('@Url.Action("CambiarContraseña", "Acceso")', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ correo: email, contraseña: newPassword })
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-                if (data.success) {
-                    window.location.href = '@Url.Action("Index", "Acceso")';
-                }
-            });
-        }
-    </script>
 </body>
 </html>
+
+
+<script>
+function enviarCodigo() {
+    var email = document.getElementById('email').value;
+
+    Swal.fire({
+        title: 'Enviando código...',
+        text: 'Por favor espera mientras procesamos tu solicitud.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch('@Url.Action("EnviarCodigoRecuperacion", "Acceso")', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email })
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.close(); // Cierra la pantalla de carga
+
+        if (data.success) {
+            document.getElementById('emailSection').style.display = 'none';
+            document.getElementById('codigoSection').style.display = 'block';
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Código Enviado',
+                text: 'Revisa tu correo electrónico para obtener el código de verificación.',
+                confirmButtonColor: '#28a745'
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message,
+                confirmButtonColor: '#d33'
+            });
+        }
+    })
+    .catch(() => {
+        Swal.close();
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No pudimos comunicarnos con el servidor.',
+            confirmButtonColor: '#d33'
+        });
+    });
+}
+
+function validarCodigo() {
+    var codigo = document.getElementById('codigo').value;
+
+    Swal.fire({
+        title: 'Verificando código...',
+        text: 'Por favor espera.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch('@Url.Action("VerificarCodigoRecuperacion", "Acceso")', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codigo: codigo })
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.close();
+
+        if (data.success) {
+            document.getElementById('codigoSection').style.display = 'none';
+            document.getElementById('passwordSection').style.display = 'block';
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Código Verificado',
+                text: 'Ahora puedes ingresar una nueva contraseña.',
+                confirmButtonColor: '#28a745'
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Código Incorrecto',
+                text: data.message,
+                confirmButtonColor: '#d33'
+            });
+        }
+    })
+    .catch(() => {
+        Swal.close();
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No pudimos comunicarnos con el servidor.',
+            confirmButtonColor: '#d33'
+        });
+    });
+}
+
+function cambiarContraseña(event) {
+    event.preventDefault();
+    var newPassword = document.getElementById('newPassword').value;
+    var confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (newPassword !== confirmPassword) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Atención',
+            text: 'Las contraseñas no coinciden.',
+            confirmButtonColor: '#f39c12'
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Actualizando contraseña...',
+        text: 'Por favor espera.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch('@Url.Action("CambiarContraseña", "Acceso")', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nuevaContraseña: newPassword })
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.close();
+        Swal.fire({
+            icon: data.success ? 'success' : 'error',
+            title: data.success ? 'Éxito' : 'Error',
+            text: data.message,
+            confirmButtonColor: data.success ? '#28a745' : '#d33'
+        }).then(() => {
+            if (data.success) {
+                window.location.href = '@Url.Action("Index", "Acceso")';
+            }
+        });
+    })
+    .catch(() => {
+        Swal.close();
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No pudimos comunicarnos con el servidor.',
+            confirmButtonColor: '#d33'
+        });
+    });
+}
+
+
+</script>

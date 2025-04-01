@@ -113,6 +113,7 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
 
@@ -127,50 +128,111 @@
             var confirmClave = $("#confirmPassword").val();
 
             if (clave !== confirmClave) {
-                alert("Las contraseñas no coinciden.");
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Atención',
+                    text: 'Las contraseñas no coinciden.',
+                    confirmButtonColor: '#f39c12'
+                });
                 $(".btn-register").prop("disabled", false);
                 return;
             }
 
-            $("#spinnerContainer").show();
-            $("#registerForm").hide();
+            Swal.fire({
+                title: 'Enviando código...',
+                text: 'Por favor espera mientras procesamos tu solicitud.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
 
             $.post("/Acceso/EnviarCodigo", { email: email }, function (data) {
-                $("#spinnerContainer").hide();
+                Swal.close();
                 $(".btn-register").prop("disabled", false);
 
                 if (data.success) {
-                    alert("Código enviado. Revisa tu correo.");
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Código Enviado',
+                        text: 'Revisa tu correo electrónico para obtener el código de verificación.',
+                        confirmButtonColor: '#28a745'
+                    });
+                    $("#registerForm").hide();
                     $("#verificationContainer").show();
                 } else {
-                    alert("Error al enviar código: " + data.message);
-                    $("#registerForm").show();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message,
+                        confirmButtonColor: '#d33'
+                    });
                 }
             }).fail(function () {
-                $("#spinnerContainer").hide();
+                Swal.close();
                 $(".btn-register").prop("disabled", false);
-                alert("Error de conexión con el servidor.");
-                $("#registerForm").show();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    text: 'No pudimos comunicarnos con el servidor.',
+                    confirmButtonColor: '#d33'
+                });
             });
         });
     });
 
     function verifyCode() {
         var codigo = $("#verificationCode").val();
+
         if (codigo.trim() === "") {
-            alert("Ingrese el código de verificación.");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: 'Ingrese el código de verificación.',
+                confirmButtonColor: '#f39c12'
+            });
             return;
         }
 
+        Swal.fire({
+            title: 'Verificando código...',
+            text: 'Por favor espera.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         $.post("/Acceso/VerificarCodigo", { codigo: codigo }, function (data) {
+            Swal.close();
+
             if (data.success) {
-                alert("Código correcto. Registrando usuario...");
-                registrarUsuario();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Código Correcto',
+                    text: 'Registrando usuario...',
+                    confirmButtonColor: '#28a745'
+                }).then(() => {
+                    registrarUsuario();
+                });
             } else {
-                alert("Código incorrecto. Inténtelo de nuevo.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Código Incorrecto',
+                    text: 'Inténtelo de nuevo.',
+                    confirmButtonColor: '#d33'
+                });
             }
         }).fail(function () {
-            alert("Error de conexión con el servidor.");
+            Swal.close();
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'No pudimos comunicarnos con el servidor.',
+                confirmButtonColor: '#d33'
+            });
         });
     }
 
@@ -180,18 +242,41 @@
         var email = $("#email").val();
         var clave = $("#password").val();
 
+        Swal.fire({
+            title: 'Registrando usuario...',
+            text: 'Por favor espera.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         $.post("/Acceso/RegistrarUsuario", {
             nombre: nombre,
             correo: email,
             contraseña: clave,
             telefono: telefono
         }, function (data) {
-            alert(data.message);
-            if (data.success) {
-                window.location.href = "/Acceso/Index";
-            }
+            Swal.close();
+            Swal.fire({
+                icon: data.success ? 'success' : 'error',
+                title: data.success ? 'Registro Exitoso' : 'Error',
+                text: data.message,
+                confirmButtonColor: data.success ? '#28a745' : '#d33'
+            }).then(() => {
+                if (data.success) {
+                    window.location.href = "/Acceso/Index";
+                }
+            });
         }).fail(function () {
-            alert("Error de conexión con el servidor.");
+            Swal.close();
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'No pudimos comunicarnos con el servidor.',
+                confirmButtonColor: '#d33'
+            });
         });
     }
 

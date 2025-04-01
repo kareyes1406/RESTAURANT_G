@@ -113,11 +113,14 @@ namespace REFOOD.Controllers
 
                 return Json(new { success = true, message = "Registro exitoso." });
             }
-            catch (SqlException ex)
+            catch (Exception ex)  // Esto captura cualquier excepción
             {
+
+                // Devolver un mensaje más claro para la prueba
                 return Json(new { success = false, message = "Error en la base de datos: " + ex.Message });
             }
         }
+
 
 
 
@@ -133,7 +136,7 @@ namespace REFOOD.Controllers
                 using (SqlConnection conexion = new SqlConnection(connectionString))
                 {
                     conexion.Open();
-                    using (SqlCommand cmd = new SqlCommand("SELECT COUNT(*) FROM Cliente WHERE Correo = @Correo", conexion))
+                    using (SqlCommand cmd = new SqlCommand("SELECT COUNT(*) FROM Clientes WHERE Correo = @Correo", conexion))
                     {
                         cmd.Parameters.AddWithValue("@Correo", email);
                         int count = (int)cmd.ExecuteScalar();
@@ -164,10 +167,24 @@ namespace REFOOD.Controllers
             }
         }
 
+
+
+
+
+
+
         [HttpPost]
         public JsonResult VerificarCodigoRecuperacion(string codigo)
         {
-            int codigoGuardado = (int)(Session["CodigoVerificacion"] ?? 0);
+            if (Session["CodigoVerificacion"] == null)
+            {
+                return Json(new { success = false, message = "Código de verificación expirado o no enviado." });
+            }
+
+            int codigoGuardado = (int)Session["CodigoVerificacion"];
+
+            Console.WriteLine("Código en sesión: " + codigoGuardado);
+            Console.WriteLine("Código ingresado: " + codigo);
 
             if (codigo.Length == 6 && codigoGuardado.ToString() == codigo)
             {
@@ -184,12 +201,19 @@ namespace REFOOD.Controllers
         {
             try
             {
+                if (string.IsNullOrEmpty(nuevaContraseña))
+                {
+                    return Json(new { success = false, message = "La nueva contraseña no puede estar vacía." });
+                }
+
                 if (Session["EmailRecuperacion"] == null)
                 {
                     return Json(new { success = false, message = "Sesión expirada o inválida." });
                 }
 
-                string email = Session["EmailRecuperacion"].ToString();
+                string email = Session["EmailRecuperacion"].ToString().Trim().ToLower(); // Normalización
+
+                Console.WriteLine("Email obtenido de sesión: " + email); // 👀 Depuración
 
                 // Encriptar la nueva contraseña
                 using (SHA256 sha256 = SHA256.Create())
@@ -198,28 +222,49 @@ namespace REFOOD.Controllers
                     byte[] hashBytes = sha256.ComputeHash(bytesClave);
                     string claveHash = Convert.ToBase64String(hashBytes);
 
-                    // Actualizar la contraseña en la base de datos
+                    // Conexión a SQL Server
                     using (SqlConnection conexion = new SqlConnection(connectionString))
                     {
                         conexion.Open();
-                        using (SqlCommand cmd = new SqlCommand("UPDATE Cliente SET Contraseña = @Contraseña WHERE Correo = @Correo", conexion))
+                        using (SqlCommand cmd = new SqlCommand("sp_CambiarContraseña", conexion))
                         {
-                            cmd.Parameters.AddWithValue("@Contraseña", claveHash);
+                            cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.AddWithValue("@Correo", email);
+                            cmd.Parameters.AddWithValue("@NuevaContraseña", claveHash);
+
+                            // Captura el valor de retorno del SP
+                            SqlParameter returnParameter = new SqlParameter("@ReturnVal", SqlDbType.Int);
+                            returnParameter.Direction = ParameterDirection.ReturnValue;
+                            cmd.Parameters.Add(returnParameter);
+
                             cmd.ExecuteNonQuery();
+
+                            int resultado = (int)returnParameter.Value; // Valor devuelto por el SP
+                            Console.WriteLine("Resultado del SP: " + resultado); // 👀 Depuración
+
+                            if (resultado == 1) // Si se actualizó correctamente
+                            {
+                                // Limpiar la sesión
+                                Session["CodigoVerificacion"] = null;
+                                Session["EmailRecuperacion"] = null;
+
+                                return Json(new { success = true, message = "Contraseña cambiada con éxito." });
+                            }
+                            else
+                            {
+                                return Json(new { success = false, message = "El correo no existe en la base de datos." });
+                            }
                         }
                     }
                 }
-
-                // Limpiar la sesión
-                Session["CodigoVerificacion"] = null;
-                Session["EmailRecuperacion"] = null;
-
-                return Json(new { success = true, message = "Contraseña cambiada con éxito." });
             }
             catch (SqlException ex)
             {
                 return Json(new { success = false, message = "Error en la base de datos: " + ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error inesperado: " + ex.Message });
             }
         }
 
@@ -229,6 +274,65 @@ namespace REFOOD.Controllers
 
 
 
-    }
-}
+        [HttpPost]
+        public JsonResult IniciarSesion(string email, string contraseña)
+        {
+            try
+            {
+                using (SqlConnection conexion = new SqlConnection(connectionString))
+                {
+                    conexion.Open();
 
+                    using (SqlCommand cmd = new SqlCommand("SELECT Contraseña FROM Clientes WHERE Correo = @Correo", conexion))
+                    {
+                        cmd.Parameters.AddWithValue("@Correo", email);
+                        var result = cmd.ExecuteScalar();
+
+                        if (result == null)
+                        {
+                            return Json(new { success = false, message = "El usuario no existe." });
+                        }
+
+                        // Comparar la contraseña ingresada con la contraseña encriptada en la base de datos
+                        string contraseñaHash = result.ToString();
+
+                        using (SHA256 sha256 = SHA256.Create())
+                        {
+                            byte[] bytesClave = Encoding.UTF8.GetBytes(contraseña);
+                            byte[] hashBytes = sha256.ComputeHash(bytesClave);
+                            string claveHash = Convert.ToBase64String(hashBytes);
+
+                            if (claveHash == contraseñaHash)
+                            {
+                                // Guardar la sesión de usuario
+                                Session["EmailUsuario"] = email;
+
+                                return Json(new { success = true, message = "Inicio de sesión exitoso." });
+                            }
+                            else
+                            {
+                                return Json(new { success = false, message = "Contraseña incorrecta." });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error: " + ex.Message });
+            }
+        }
+
+
+        public ActionResult CerrarSesion()
+        {
+            // Limpiar las variables de sesión relacionadas con el usuario
+            Session["EmailUsuario"] = null;
+
+            // Redirigir a la página de inicio de sesión
+            return RedirectToAction("Login", "Acceso");
+        }
+
+    }
+
+}
