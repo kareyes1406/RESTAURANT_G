@@ -1,0 +1,624 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Restaurante Gourmet</title>
+
+    <!-- Preconexión para carga más rápida de fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- jQuery primero -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap 5 JS - ANTES de Styles.Render -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Google Fonts - Tipografía más lujosa -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    @Styles.Render("~/Content/css")
+
+    <style>
+        :root {
+            --primary-color: #1e1e1e;           /* Negro casi puro */
+            --secondary-color: #9c8352;         /* Dorado elegante */
+            --accent-color: #e6d7b5;            /* Crema suave */
+            --dark-color: #121212;              /* Negro oscuro */
+            --light-color: #f9f7f3;             /* Blanco hueso */
+            --gold-gradient: linear-gradient(135deg, #9c8352 0%, #d4ba74 50%, #9c8352 100%);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--light-color);
+            color: #2c2c2c;
+            padding-top: 80px;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Elementos premium */
+        .gold-text {
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--gold-gradient);
+            margin: 15px 0;
+        }
+
+        /* Navbar lujoso */
+        .navbar {
+            background-color: var(--dark-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(156, 131, 82, 0.3);
+        }
+
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary-color) !important;
+            letter-spacing: 1px;
+        }
+
+        .nav-link {
+            color: #e6d7b5 !important;
+            font-weight: 400;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            padding: 0.5rem 1rem;
+            margin: 0 0.25rem;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--gold-gradient);
+            transition: all 0.4s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 80%;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: white !important;
+        }
+
+        /* Dropdown lujoso */
+        .dropdown-menu {
+            background-color: var(--dark-color);
+            border: 1px solid var(--secondary-color);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 5px;
+        }
+
+        .dropdown-item {
+            color: var(--accent-color);
+            padding: 0.5rem 1rem;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .dropdown-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 1px;
+            background: var(--gold-gradient);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: transparent;
+            color: white;
+            padding-left: 1.5rem;
+        }
+
+        .dropdown-item:hover::before {
+            width: 10px;
+        }
+
+        .dropdown-divider {
+            border-top: 1px solid rgba(156, 131, 82, 0.3);
+            margin: 0.5rem 0;
+        }
+
+        /* Tarjetas de lujo */
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+            transition: all 0.4s ease;
+            background-color: white;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background: var(--gold-gradient);
+            color: var(--dark-color);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border-top-left-radius: 8px !important;
+            border-top-right-radius: 8px !important;
+            padding: 20px;
+            border-bottom: none;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        /* Botones elegantes */
+        .btn {
+            border-radius: 4px;
+            padding: 0.6rem 1.5rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: var(--gold-gradient);
+            border: none;
+            color: var(--dark-color);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(156, 131, 82, 0.3);
+            background: linear-gradient(135deg, #b09a65 0%, #e5cc8c 50%, #b09a65 100%);
+        }
+
+        .btn-secondary {
+            background-color: var(--dark-color);
+            border: 1px solid var(--secondary-color);
+            color: var(--secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-color);
+            color: var(--dark-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-outline-light {
+            border: 1px solid var(--secondary-color);
+            color: var(--secondary-color);
+            background-color: transparent;
+        }
+
+        .btn-outline-light:hover {
+            background-color: var(--secondary-color);
+            color: var(--dark-color);
+            border-color: var(--secondary-color);
+        }
+
+        /* Footer lujoso */
+        .footer {
+            background-color: var(--dark-color);
+            color: var(--accent-color);
+            padding: 40px 0 20px;
+            margin-top: 70px;
+            border-top: 1px solid rgba(156, 131, 82, 0.3);
+        }
+
+        .footer a {
+            color: var(--secondary-color);
+            transition: all 0.3s ease;
+            margin: 0 10px;
+            font-size: 1.2rem;
+        }
+
+        .footer a:hover {
+            color: white;
+        }
+
+        .footer .social-icons {
+            margin-bottom: 20px;
+        }
+
+        .footer-branding {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+
+        .footer-info {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Estados de mesas con estilo lujoso */
+        .mesa-disponible {
+            background-color: rgba(209, 231, 221, 0.8);
+            color: #0f5132;
+            border-left: 4px solid #0f5132;
+            transition: all 0.3s ease;
+        }
+
+        .mesa-disponible:hover {
+            background-color: rgba(209, 231, 221, 1);
+            transform: translateY(-2px);
+        }
+
+        .mesa-ocupada {
+            background-color: rgba(248, 215, 218, 0.8);
+            color: #842029;
+            border-left: 4px solid #842029;
+            transition: all 0.3s ease;
+        }
+
+        .mesa-ocupada:hover {
+            background-color: rgba(248, 215, 218, 1);
+            transform: translateY(-2px);
+        }
+
+        .mesa-reservada {
+            background-color: rgba(207, 244, 252, 0.8);
+            color: #055160;
+            border-left: 4px solid #055160;
+            transition: all 0.3s ease;
+        }
+
+        .mesa-reservada:hover {
+            background-color: rgba(207, 244, 252, 1);
+            transform: translateY(-2px);
+        }
+
+        /* Sidebar para dashboard de lujo */
+        .sidebar {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            height: calc(100vh - 80px);
+            width: 280px;
+            background-color: var(--dark-color);
+            padding: 30px 20px;
+            color: var(--accent-color);
+            overflow-y: auto;
+            transition: all 0.4s ease;
+            z-index: 100;
+            border-right: 1px solid rgba(156, 131, 82, 0.3);
+        }
+
+        .sidebar-header {
+            border-bottom: 1px solid var(--secondary-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 15px;
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+            font-weight: 400;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(156, 131, 82, 0.2);
+            color: var(--secondary-color);
+            padding-left: 20px;
+        }
+
+        .sidebar-menu i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            color: var(--secondary-color);
+        }
+
+        .content-with-sidebar {
+            margin-left: 280px;
+            transition: all 0.4s ease;
+            padding: 20px;
+        }
+
+        @@media screen and (max-width: 991.98px) {
+            .sidebar {
+                margin-left: -280px;
+            }
+
+            .content-with-sidebar {
+                margin-left: 0;
+            }
+
+            .sidebar.active {
+                margin-left: 0;
+            }
+        }
+
+        /* Efectos de transición generales */
+        a, button, .card, .nav-link::after, .dropdown-item::before {
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        /* Sección de cabecera con fondo de imagen */
+        .header-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/Content/img/restaurant-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 0;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .header-section h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .header-section p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        /* Tarjeta transparente de glassmorphism */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            color: white;
+        }
+
+        /* Elementos decorativos */
+        .decorative-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C8352' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+            z-index: -1;
+        }
+
+        .img-hover-zoom {
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .img-hover-zoom img {
+            transition: transform 0.5s ease;
+        }
+
+        .img-hover-zoom:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Tabla de lujo */
+        .table-luxury {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table-luxury th {
+            background-color: var(--dark-color);
+            color: var(--secondary-color);
+            padding: 15px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .table-luxury td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(156, 131, 82, 0.2);
+            vertical-align: middle;
+        }
+
+        .table-luxury tbody tr:hover {
+            background-color: rgba(156, 131, 82, 0.05);
+        }
+
+        /* Notificación de lujo */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--gold-gradient);
+            color: var(--dark-color);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+    </style>
+
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <!-- Barra de navegación lujosa -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                <i class="fas fa-crown me-2"></i>Restaurante Gourmet
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" href="@Url.Action("Index", "Home")">
+                            <i class="fas fa-table me-2"></i>Mesas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("Dashboard", "Estadisticas")" class="btn btn-outline-light me-2">
+                            <i class="fas fa-chart-bar me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="@Url.Action("VerTodasReservas", "Reservas")">
+                            <i class="fas fa-calendar-alt me-2"></i>Gestión de Reservas
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex justify-content-end">
+                    <a href="@Url.Action("CerrarSesion", "Acceso")" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="py-5">
+        <div class="container">
+            @RenderBody()
+        </div>
+    </main>
+
+    <!-- Footer lujoso -->
+    <footer class="footer">
+        <div class="container text-center">
+            <div class="footer-branding">Restaurante Gourmet</div>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-tripadvisor"></i></a>
+            </div>
+            <div class="footer-info">
+                <p>Calle Principal 123, Ciudad, País | Teléfono: +123 456 7890</p>
+                <p>&copy; @DateTime.Now.Year - Restaurante Gourmet. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts al final del body para mejorar el rendimiento -->
+    <script>
+        $(document).ready(function () {
+            // Solución directa para menús desplegables
+            $('.dropdown-toggle').dropdown();
+
+            // Solución alternativa si el método anterior no funciona
+            $('.dropdown-toggle').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $(this).parent().toggleClass('show');
+                $(this).next('.dropdown-menu').toggleClass('show');
+            });
+
+            // Cerrar dropdowns al hacer clic en cualquier parte
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest('.dropdown').length) {
+                    $('.dropdown-menu.show').removeClass('show');
+                    $('.dropdown.show').removeClass('show');
+                }
+            });
+
+            // Inicializar tooltips
+            $('[data-bs-toggle="tooltip"]').tooltip();
+
+            // Inicializar popovers
+            $('[data-bs-toggle="popover"]').popover();
+
+            // Efecto de scroll para mostrar elementos
+            function revealOnScroll() {
+                var reveals = document.querySelectorAll('.reveal');
+                for (var i = 0; i < reveals.length; i++) {
+                    var windowHeight = window.innerHeight;
+                    var elementTop = reveals[i].getBoundingClientRect().top;
+                    var elementVisible = 150;
+                    if (elementTop < windowHeight - elementVisible) {
+                        reveals[i].classList.add('active');
+                    }
+                }
+            }
+
+            $(window).on('scroll', revealOnScroll);
+            revealOnScroll();
+
+            // Activar el menú móvil
+            $('.navbar-toggler').on('click', function () {
+                $('#navbarMain').toggleClass('show');
+            });
+        });
+    </script>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

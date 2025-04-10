@@ -1,0 +1,101 @@
+﻿@model Dictionary<string, object>
+@{
+    ViewBag.Title = "Editar Mesa";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var id = Convert.ToString(Model["Id"]);
+    var numero = Convert.ToString(Model["NumeroMesa"]);
+    var capacidad = Convert.ToString(Model["Capacidad"]);
+    var ubicacion = Convert.ToString(Model["Ubicacion"]);
+    var estado = Convert.ToString(Model["Estado"]);
+    var disponibleDesde = Model["DisponibleDesde"] != null ?
+        Convert.ToDateTime(Model["DisponibleDesde"]).ToString("yyyy-MM-ddTHH:mm") : "";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fa fa-edit me-2"></i>Editar Mesa</h3>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("Edit", "Home", FormMethod.Post, new { @class = "needs-validation" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@id" />
+                        <div class="mb-3">
+                            <label for="Numero" class="form-label">Número de Mesa</label>
+                            <input type="number" class="form-control" id="Numero" name="NumeroMesa" value="@numero" required min="1" readonly>
+                            @Html.ValidationMessage("NumeroMesa", new { @class = "text-danger" })
+                            <small class="text-muted">El número de mesa no se puede modificar</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="Capacidad" class="form-label">Capacidad</label>
+                            <input type="number" class="form-control" id="Capacidad" name="Capacidad" value="@capacidad" required min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="Ubicacion" class="form-label">Ubicación</label>
+                            <select class="form-select" id="Ubicacion" name="Ubicacion" required>
+                                @foreach (var item in ViewBag.Ubicaciones)
+                                {
+                                    <option value="@item.Value" @(item.Value == ubicacion ? "selected" : "")>@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="Estado" class="form-label">Estado</label>
+                            <select class="form-select" id="Estado" name="Estado" required>
+                                @foreach (var item in ViewBag.Estados)
+                                {
+                                    <option value="@item.Value" @(item.Value == estado ? "selected" : "")>@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="DisponibleDesde" class="form-label">Disponible Desde</label>
+                            <input type="datetime-local" class="form-control" id="DisponibleDesde" name="DisponibleDesde" value="@disponibleDesde" required readonly>
+                            @Html.ValidationMessage("DisponibleDesde", new { @class = "text-danger" })
+                            <small class="text-muted">La fecha no se puede modificar</small>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+                                <i class="fa fa-arrow-left me-2"></i>Volver
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-save me-2"></i>Guardar Cambios
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Script para bloquear el cambio de fecha
+    document.addEventListener('DOMContentLoaded', function() {
+        var fechaInput = document.getElementById('DisponibleDesde');
+        var fechaOriginal = fechaInput.value;
+
+        fechaInput.addEventListener('change', function() {
+            // Mantener solo la hora si la fecha cambia
+            var nuevaFecha = new Date(this.value);
+            var fechaOrig = new Date(fechaOriginal);
+
+            if (nuevaFecha.getDate() !== fechaOrig.getDate() ||
+                nuevaFecha.getMonth() !== fechaOrig.getMonth() ||
+                nuevaFecha.getFullYear() !== fechaOrig.getFullYear()) {
+
+                // Restablecer la fecha pero permitir cambio de hora
+                var nuevaHora = nuevaFecha.getHours();
+                var nuevoMinuto = nuevaFecha.getMinutes();
+
+                fechaOrig.setHours(nuevaHora);
+                fechaOrig.setMinutes(nuevoMinuto);
+
+                var formattedDate = fechaOrig.toISOString().slice(0, 16);
+                this.value = formattedDate;
+            }
+        });
+    });
+</script>

@@ -1,0 +1,62 @@
+﻿@{
+    ViewBag.Title = "Crear Nueva Mesa";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fa fa-plus-circle me-2"></i>Crear Nueva Mesa</h3>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("Create", "Home", FormMethod.Post, new { @class = "needs-validation" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            <label for="Numero" class="form-label">Número de Mesa</label>
+                            <input type="number" class="form-control" id="Numero" name="Numero" required min="1">
+                            @Html.ValidationMessage("Numero", new { @class = "text-danger" })
+                        </div>
+                        <div class="mb-3">
+                            <label for="Capacidad" class="form-label">Capacidad</label>
+                            <input type="number" class="form-control" id="Capacidad" name="Capacidad" required min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="Ubicacion" class="form-label">Ubicación</label>
+                            <select class="form-select" id="Ubicacion" name="Ubicacion" required>
+                                @foreach (var item in ViewBag.Ubicaciones)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="Estado" class="form-label">Estado</label>
+                            <select class="form-select" id="Estado" name="Estado" required>
+                                @foreach (var item in ViewBag.Estados)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="DisponibleDesde" class="form-label">Disponible Desde</label>
+                            <input type="datetime-local" class="form-control" id="DisponibleDesde" name="DisponibleDesde" min="@ViewBag.FechaMinima" required>
+                            @Html.ValidationMessage("DisponibleDesde", new { @class = "text-danger" })
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+                                <i class="fa fa-arrow-left me-2"></i>Volver
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-save me-2"></i>Guardar
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

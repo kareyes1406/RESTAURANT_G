@@ -1,0 +1,187 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #000000, #1a1a1a, #2e2e2e, #3d2b1f);
+            color: #d4af37;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: row;
+            width: 900px;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0px 4px 15px rgba(212, 175, 55, 0.6);
+            background-color: #111;
+            border: 2px solid #a50000; /* Sutil toque de rojo en el borde */
+        }
+
+            .card img {
+                width: 50%;
+                object-fit: cover;
+            }
+
+        .card-body {
+            padding: 3rem;
+            width: 50%;
+        }
+
+        .form-control {
+            background: transparent;
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+            .form-control:focus {
+                border-color: #ff4d4d; /* Rojo sutil en el foco */
+                box-shadow: 0 0 10px rgba(255, 77, 77, 0.8);
+            }
+
+        .btn-login {
+            background-color: #d4af37;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #000;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-bottom: 3px solid #a50000; /* Rojo en el borde inferior */
+        }
+
+            .btn-login:hover {
+                transform: scale(1.05);
+                box-shadow: 0px 0px 15px rgba(212, 175, 55, 0.8);
+            }
+
+        .links a {
+            color: #d4af37;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+            .links a:hover {
+                color: #ff4d4d; /* Rojo en el hover */
+                text-decoration: underline;
+            }
+
+        /* Mensaje de bienvenida con un sutil toque de rojo */
+        .welcome-text {
+            color: #ff4d4d;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <img src="~/Imagenes/luxoria.png" alt="Login Image">
+            <div class="card-body">
+                <div class="welcome-text">Bienvenido Administrador</div> <!-- Nuevo mensaje en rojo -->
+                <h2 class="text-center mb-4">Panel de Acceso</h2>
+                <form>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Usuario</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-login w-100">Iniciar Sesión</button>
+                </form>
+                <div class="links text-center mt-3">
+                    <a href="@Url.Action("Recuperar", "Acceso")">¿Olvidaste tu contraseña?</a>
+                    <br>
+                    <a href="@Url.Action("Registro", "Acceso")">Registrarte</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- SweetAlert CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+</html>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+    $("form").on("submit", function (e) {
+        e.preventDefault(); // Evita el envío del formulario de forma tradicional
+
+        var email = $("#email").val();
+        var password = $("#password").val();
+
+        // Enviar la solicitud de inicio de sesión
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("IniciarSesion", "Acceso")",
+            data: {
+                email: email,
+                contraseña: password
+            },
+            success: function (response) {
+                if (response.success) {
+                    // SweetAlert para éxito
+                    Swal.fire({
+                        title: 'Éxito!',
+                        text: response.message,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar'
+                    }).then(function() {
+                        // Redirigir a la página principal o donde sea necesario
+                        window.location.href = "@Url.Action("Index", "Home")";
+                    });
+                } else {
+                    // SweetAlert para error
+                    Swal.fire({
+                        title: 'Error!',
+                        text: response.message,
+                        icon: 'error',
+                        confirmButtonText: 'Intentar de nuevo'
+                    });
+                }
+            },
+            error: function () {
+                // SweetAlert para error en el proceso
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Hubo un problema al intentar iniciar sesión.',
+                    icon: 'error',
+                    confirmButtonText: 'Intentar de nuevo'
+                });
+            }
+        });
+    });
+});
+
+</script>

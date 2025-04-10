@@ -1,0 +1,213 @@
+﻿@model List<Dictionary<string, object>>
+@{
+    ViewBag.Title = "Gestión de Mesas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <!-- Título y botón de nueva mesa -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0"><i class="fa fa-chair me-2"></i>Administración de Mesas</h2>
+            <p class="text-muted">Gestione las mesas del restaurante fácilmente</p>
+        </div>
+        <a href="@Url.Action("Create", "Home")" class="btn btn-primary">
+            <i class="fa fa-plus me-2"></i>Nueva Mesa
+        </a>
+    </div>
+
+    <!-- Mensajes de alerta -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa fa-exclamation-triangle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Filtros y búsqueda -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-search"></i></span>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Buscar mesa...">
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="d-flex gap-2 flex-wrap justify-content-md-end">
+                        <button class="btn btn-outline-secondary filter-btn active" data-filter="all">
+                            Todas <span class="badge bg-secondary ms-1">@Model.Count</span>
+                        </button>
+                        <button class="btn btn-outline-success filter-btn" data-filter="disponible">
+                            Disponibles <span class="badge bg-success ms-1">@Model.Count(m => m["Estado"].ToString() == "disponible")</span>
+                        </button>
+                        <button class="btn btn-outline-danger filter-btn" data-filter="ocupada">
+                            Ocupadas <span class="badge bg-danger ms-1">@Model.Count(m => m["Estado"].ToString() == "ocupada")</span>
+                        </button>
+                        <button class="btn btn-outline-warning filter-btn" data-filter="reservada">
+                            Reservadas <span class="badge bg-warning ms-1">@Model.Count(m => m["Estado"].ToString() == "reservada")</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="row" id="tableContainer">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="col-12">
+                <div class="card shadow-sm p-4 text-center">
+                    <div class="empty-state">
+                        <i class="fa fa-chair fa-3x mb-3 text-muted"></i>
+                        <h4>No hay mesas registradas</h4>
+                        <p class="text-muted">Comience agregando una nueva mesa para gestionar su restaurante.</p>
+                        <a href="@Url.Action("Create", "Home")" class="btn btn-primary mt-3">
+                            <i class="fa fa-plus me-2"></i>Agregar Mesa
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            foreach (var mesa in Model)
+            {
+                string estadoActual = mesa["Estado"].ToString();
+                string cardClass = "";
+                string statusBadgeClass = "";
+                string statusText = "";
+                string iconClass = "";
+
+                switch (estadoActual)
+                {
+                    case "disponible":
+                        cardClass = "border-success";
+                        statusBadgeClass = "bg-success";
+                        statusText = "Disponible";
+                        iconClass = "fa-check-circle text-success";
+                        break;
+                    case "ocupada":
+                        cardClass = "border-danger";
+                        statusBadgeClass = "bg-danger";
+                        statusText = "Ocupada";
+                        iconClass = "fa-times-circle text-danger";
+                        break;
+                    case "reservada":
+                        cardClass = "border-warning";
+                        statusBadgeClass = "bg-warning";
+                        statusText = "Reservada";
+                        iconClass = "fa-calendar-check text-warning";
+                        break;
+                }
+
+                <div class="col-md-6 col-lg-4 col-xl-3 mb-4 mesa-card" data-estado="@estadoActual" data-numero="@mesa["NumeroMesa"]" data-ubicacion="@mesa["Ubicacion"]">
+                    <div class="card shadow-sm h-100 @cardClass">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Mesa #@mesa["NumeroMesa"]</h5>
+                            <span class="badge @statusBadgeClass">@statusText</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex mb-3">
+                                <div class="me-3">
+                                    <i class="fa fa-chair fa-2x text-muted"></i>
+                                </div>
+                                <div>
+                                    <div class="mb-1">
+                                        <i class="fa fa-users me-2"></i><strong>Capacidad:</strong> @mesa["Capacidad"] personas
+                                    </div>
+                                    <div class="mb-1">
+                                        <i class="fa fa-map-marker-alt me-2"></i><strong>Ubicación:</strong> @mesa["Ubicacion"]
+                                    </div>
+                                    @if (mesa.ContainsKey("ProximaReserva") && mesa["ProximaReserva"] != null)
+                                    {
+                                        var reserva = (Dictionary<string, object>)mesa["ProximaReserva"];
+                                        <div class="alert alert-warning mt-2 mb-0 py-2 px-3">
+                                            <i class="fa fa-clock me-1"></i>Reserva: @reserva["NombreCliente"] - @((reserva["HoraReserva"] is TimeSpan timeSpan) ? timeSpan.ToString(@"hh\:mm") : reserva["HoraReserva"].ToString())
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-light d-flex justify-content-between">
+                            <div>
+                                <a href="@Url.Action("Edit", "Home", new { id = mesa["Id"] })" class="btn btn-sm btn-outline-secondary me-1">
+                                    <i class="fa fa-edit me-1"></i>Editar
+                                </a>
+                                @using (Html.BeginForm("CambiarEstado", "Home", new { id = mesa["Id"] }, FormMethod.Post, new { style = "display:inline" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                        @switch (estadoActual)
+                                        {
+                                            case "disponible":
+                                                <i class="fa fa-chair me-1"></i><text>Ocupar</text>
+                                                break;
+                                            case "ocupada":
+                                                <i class="fa fa-door-open me-1"></i><text>Liberar</text>
+                                                break;
+                                            case "reservada":
+                                                <i class="fa fa-check me-1"></i><text>Confirmar</text>
+                                                break;
+                                        }
+                                    </button>
+                                }
+                            </div>
+                            <span class="text-muted small pt-2">
+                                <i class="fa fa-calendar me-1"></i>Disponible desde: @Convert.ToDateTime(mesa["DisponibleDesde"]).ToString("dd/MM/yy")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Filtrado de mesas
+            $('.filter-btn').click(function () {
+                $('.filter-btn').removeClass('active');
+                $(this).addClass('active');
+
+                var filter = $(this).data('filter');
+
+                if (filter === 'all') {
+                    $('.mesa-card').show();
+                } else {
+                    $('.mesa-card').hide();
+                    $('.mesa-card[data-estado="' + filter + '"]').show();
+                }
+            });
+
+            // Búsqueda de mesas
+            $('#searchInput').on('keyup', function () {
+                var value = $(this).val().toLowerCase();
+                $('.mesa-card').filter(function () {
+                    var numero = $(this).data('numero').toString().toLowerCase();
+                    var ubicacion = $(this).data('ubicacion').toString().toLowerCase();
+                    return numero.indexOf(value) > -1 || ubicacion.indexOf(value) > -1;
+                }).show();
+
+                $('.mesa-card').filter(function () {
+                    var numero = $(this).data('numero').toString().toLowerCase();
+                    var ubicacion = $(this).data('ubicacion').toString().toLowerCase();
+                    return numero.indexOf(value) <= -1 && ubicacion.indexOf(value) <= -1;
+                }).hide();
+            });
+        });
+    </script>
+}

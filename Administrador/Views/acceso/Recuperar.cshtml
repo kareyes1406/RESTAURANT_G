@@ -1,0 +1,264 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #000000, #2c2c2c, #8b6f47);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            width: 500px;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0px 6px 15px rgba(255, 204, 0, 0.5);
+            background-color: #222;
+            padding: 2rem;
+            text-align: center;
+            border: 2px solid #ffcc00;
+        }
+
+        .form-control {
+            background: transparent;
+            border: 2px solid #ffcc00;
+            color: #fff;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+            .form-control:focus {
+                border-color: #ff9900;
+                box-shadow: 0 0 10px rgba(255, 153, 0, 0.6);
+            }
+
+        .btn-login {
+            background-color: #ffcc00;
+            border: none;
+            font-size: 1.2rem;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            color: #000;
+            font-weight: bold;
+        }
+
+            .btn-login:hover {
+                transform: scale(1.05);
+                box-shadow: 0px 0px 15px rgba(255, 204, 0, 0.8);
+            }
+
+        .error-message {
+            color: #ff8888;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h2 class="mb-4">Recuperar Contraseña</h2>
+            <form id="resetForm" onsubmit="return cambiarContraseña(event)">
+                <div id="emailSection" class="mb-3">
+                    <label for="email" class="form-label">Correo Electrónico</label>
+                    <input type="email" class="form-control" id="email" required>
+                    <button type="button" class="btn btn-login w-100 mt-3" onclick="enviarCodigo()">Enviar Código</button>
+                </div>
+                <div id="codigoSection" class="mt-3" style="display: none;">
+                    <label for="codigo" class="form-label">Código de Verificación</label>
+                    <input type="text" class="form-control" id="codigo" required>
+                    <button type="button" class="btn btn-login w-100 mt-3" onclick="validarCodigo()">Validar Código</button>
+                </div>
+                <div id="passwordSection" class="mt-3" style="display: none;">
+                    <label for="newPassword" class="form-label">Nueva Contraseña</label>
+                    <input type="password" class="form-control" id="newPassword" required>
+                    <label for="confirmPassword" class="form-label mt-2">Confirmar Contraseña</label>
+                    <input type="password" class="form-control" id="confirmPassword" required>
+                    <button type="submit" class="btn btn-login w-100 mt-3">Cambiar Contraseña</button>
+                </div>
+                <p id="errorMessage" class="error-message" style="display: none;"></p>
+            </form>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+</html>
+
+
+<script>
+function enviarCodigo() {
+    var email = document.getElementById('email').value;
+
+    Swal.fire({
+        title: 'Enviando código...',
+        text: 'Por favor espera mientras procesamos tu solicitud.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch('@Url.Action("EnviarCodigoRecuperacion", "Acceso")', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email })
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.close(); // Cierra la pantalla de carga
+
+        if (data.success) {
+            document.getElementById('emailSection').style.display = 'none';
+            document.getElementById('codigoSection').style.display = 'block';
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Código Enviado',
+                text: 'Revisa tu correo electrónico para obtener el código de verificación.',
+                confirmButtonColor: '#28a745'
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message,
+                confirmButtonColor: '#d33'
+            });
+        }
+    })
+    .catch(() => {
+        Swal.close();
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No pudimos comunicarnos con el servidor.',
+            confirmButtonColor: '#d33'
+        });
+    });
+}
+
+function validarCodigo() {
+    var codigo = document.getElementById('codigo').value;
+
+    Swal.fire({
+        title: 'Verificando código...',
+        text: 'Por favor espera.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch('@Url.Action("VerificarCodigoRecuperacion", "Acceso")', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codigo: codigo })
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.close();
+
+        if (data.success) {
+            document.getElementById('codigoSection').style.display = 'none';
+            document.getElementById('passwordSection').style.display = 'block';
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Código Verificado',
+                text: 'Ahora puedes ingresar una nueva contraseña.',
+                confirmButtonColor: '#28a745'
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Código Incorrecto',
+                text: data.message,
+                confirmButtonColor: '#d33'
+            });
+        }
+    })
+    .catch(() => {
+        Swal.close();
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No pudimos comunicarnos con el servidor.',
+            confirmButtonColor: '#d33'
+        });
+    });
+}
+
+function cambiarContraseña(event) {
+    event.preventDefault();
+    var newPassword = document.getElementById('newPassword').value;
+    var confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (newPassword !== confirmPassword) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Atención',
+            text: 'Las contraseñas no coinciden.',
+            confirmButtonColor: '#f39c12'
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Actualizando contraseña...',
+        text: 'Por favor espera.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch('@Url.Action("CambiarContraseña", "Acceso")', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nuevaContraseña: newPassword })
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.close();
+        Swal.fire({
+            icon: data.success ? 'success' : 'error',
+            title: data.success ? 'Éxito' : 'Error',
+            text: data.message,
+            confirmButtonColor: data.success ? '#28a745' : '#d33'
+        }).then(() => {
+            if (data.success) {
+                window.location.href = '@Url.Action("Index", "Acceso")';
+            }
+        });
+    })
+    .catch(() => {
+        Swal.close();
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No pudimos comunicarnos con el servidor.',
+            confirmButtonColor: '#d33'
+        });
+    });
+}
+
+
+</script>

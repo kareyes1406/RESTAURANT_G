@@ -177,7 +177,6 @@
     <Compile Include="Clases\UsuarioController.cs" />
     <Compile Include="Controllers\AccesoControlerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Controllers\HomeControllerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />

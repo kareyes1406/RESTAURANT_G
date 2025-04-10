@@ -12,6 +12,8 @@ namespace CapaEntidad
         public int Id { get; set; }
         public int Numero { get; set; }
         public int Capacidad { get; set; } // Personas que caben en la mesa
+        public string Ubicacion { get; set; }
+        public string Estado { get; set; }
         public bool Disponible { get; set; } = true;
     }
 }

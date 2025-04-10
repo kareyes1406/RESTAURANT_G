@@ -283,19 +283,21 @@ namespace REFOOD.Controllers
                 {
                     conexion.Open();
 
-                    using (SqlCommand cmd = new SqlCommand("SELECT Contraseña FROM Clientes WHERE Correo = @Correo", conexion))
+                    using (SqlCommand cmd = new SqlCommand("SELECT ID, Contraseña FROM Clientes WHERE Correo = @Correo", conexion))
                     {
                         cmd.Parameters.AddWithValue("@Correo", email);
-                        var result = cmd.ExecuteScalar();
+                        SqlDataReader reader = cmd.ExecuteReader();
 
-                        if (result == null)
+                        if (!reader.Read())
                         {
                             return Json(new { success = false, message = "El usuario no existe." });
                         }
 
-                        // Comparar la contraseña ingresada con la contraseña encriptada en la base de datos
-                        string contraseñaHash = result.ToString();
+                        int clienteId = Convert.ToInt32(reader["ID"]);
+                        string contraseñaHash = reader["Contraseña"].ToString();
+                        reader.Close();
 
+                        // Comparar la contraseña ingresada con la contraseña encriptada en la base de datos
                         using (SHA256 sha256 = SHA256.Create())
                         {
                             byte[] bytesClave = Encoding.UTF8.GetBytes(contraseña);
@@ -304,8 +306,9 @@ namespace REFOOD.Controllers
 
                             if (claveHash == contraseñaHash)
                             {
-                                // Guardar la sesión de usuario
+                                // Guardar la sesión de usuario y el ID del cliente
                                 Session["EmailUsuario"] = email;
+                                Session["ClienteId"] = clienteId;
 
                                 return Json(new { success = true, message = "Inicio de sesión exitoso." });
                             }
@@ -323,14 +326,14 @@ namespace REFOOD.Controllers
             }
         }
 
-
         public ActionResult CerrarSesion()
         {
             // Limpiar las variables de sesión relacionadas con el usuario
             Session["EmailUsuario"] = null;
+            Session["ClienteId"] = null;
 
             // Redirigir a la página de inicio de sesión
-            return RedirectToAction("Login", "Acceso");
+            return RedirectToAction("Index", "Acceso");
         }
 
     }

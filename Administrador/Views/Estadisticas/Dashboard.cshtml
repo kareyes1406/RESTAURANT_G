@@ -1,0 +1,329 @@
+﻿
+@{
+    ViewBag.Title = "Dashboard de Reservas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Dashboard de Estadísticas de Reservas</h2>
+                <div>
+                    <a href="@Url.Action("VerTodasReservas", "Reservas")" class="btn btn-primary">
+                        <i class="fas fa-list me-2"></i>Ver Todas las Reservas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjetas de estadísticas generales -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Reservas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalReservas">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Reservas Hoy
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="reservasHoy">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Reservas Pendientes
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="reservasPendientes">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Ocupación Promedio
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="ocupacionPromedio">-</div>
+                            <div class="small text-muted">personas por reserva</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficas de Reservas -->
+    <div class="row">
+        <!-- Gráfica de Reservas Diarias -->
+        <div class="col-lg-12 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Reservas Diarias (Última Semana)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:300px;">
+                        <canvas id="graficoReservasDiarias"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Gráfica de Reservas Semanales -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Reservas Semanales (Último Mes)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:300px;">
+                        <canvas id="graficoReservasSemanales"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfica de Reservas Mensuales -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Reservas Mensuales (Últimos 6 Meses)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:300px;">
+                        <canvas id="graficoReservasMensuales"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df !important;
+    }
+
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a !important;
+    }
+
+    .border-left-info {
+        border-left: 0.25rem solid #36b9cc !important;
+    }
+
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e !important;
+    }
+
+    .border-left-danger {
+        border-left: 0.25rem solid #e74a3b !important;
+    }
+
+    .text-xs {
+        font-size: .7rem;
+    }
+
+    .text-gray-300 {
+        color: #dddfeb !important;
+    }
+
+    .text-gray-800 {
+        color: #5a5c69 !important;
+    }
+</style>
+
+@section scripts {
+    <!-- Agregar Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+    <script>
+        // Variables para almacenar las instancias de gráficos
+        let chartDiario, chartSemanal, chartMensual;
+
+        $(document).ready(function() {
+            // Cargar estadísticas generales
+            cargarEstadisticasGenerales();
+
+            // Cargar datos para los gráficos
+            cargarDatosReservasDiarias();
+            cargarDatosReservasSemanales();
+            cargarDatosReservasMensuales();
+        });
+
+        function cargarEstadisticasGenerales() {
+            $.ajax({
+                url: '@Url.Action("ObtenerEstadisticasGenerales", "Estadisticas")',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.error) {
+                        console.error("Error al cargar estadísticas generales:", data.message);
+                    } else {
+                        // Actualizar valores en las tarjetas
+                        $("#totalReservas").text(data.totalReservas);
+                        $("#reservasHoy").text(data.reservasHoy);
+                        $("#reservasPendientes").text(data.reservasPendientes);
+                        $("#ocupacionPromedio").text(data.ocupacionPromedio);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error en la solicitud AJAX:", error);
+                }
+            });
+        }
+
+        function cargarDatosReservasDiarias() {
+            $.ajax({
+                url: '@Url.Action("ObtenerReservasDiarias", "Estadisticas")',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.error) {
+                        console.error("Error al cargar datos diarios:", data.message);
+                    } else {
+                        crearGraficoReservas('graficoReservasDiarias', data, 'chartDiario');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error en la solicitud AJAX:", error);
+                }
+            });
+        }
+
+        function cargarDatosReservasSemanales() {
+            $.ajax({
+                url: '@Url.Action("ObtenerReservasSemanales", "Estadisticas")',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.error) {
+                        console.error("Error al cargar datos semanales:", data.message);
+                    } else {
+                        crearGraficoReservas('graficoReservasSemanales', data, 'chartSemanal');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error en la solicitud AJAX:", error);
+                }
+            });
+        }
+
+        function cargarDatosReservasMensuales() {
+            $.ajax({
+                url: '@Url.Action("ObtenerReservasMensuales", "Estadisticas")',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.error) {
+                        console.error("Error al cargar datos mensuales:", data.message);
+                    } else {
+                        crearGraficoReservas('graficoReservasMensuales', data, 'chartMensual');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error en la solicitud AJAX:", error);
+                }
+            });
+        }
+
+        function crearGraficoReservas(idCanvas, datos, chartVariable) {
+            const ctx = document.getElementById(idCanvas).getContext('2d');
+
+            // Destruir el gráfico anterior si existe
+            if (window[chartVariable]) {
+                window[chartVariable].destroy();
+            }
+
+            // Crear el nuevo gráfico
+            window[chartVariable] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: datos.etiquetas,
+                    datasets: [{
+                        label: 'Total Reservas',
+                        data: datos.series[0].data,
+                        backgroundColor: 'rgba(78, 115, 223, 0.7)',
+                        borderColor: 'rgba(78, 115, 223, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Atendidas',
+                        data: datos.series[1].data,
+                        backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                        borderColor: 'rgba(40, 167, 69, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Canceladas',
+                        data: datos.series[2].data,
+                        backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                        borderColor: 'rgba(220, 53, 69, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}

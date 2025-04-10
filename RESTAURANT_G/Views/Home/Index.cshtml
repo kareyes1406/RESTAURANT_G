@@ -1,33 +1,915 @@
-﻿@{
-    ViewBag.Title = "Home Page";
-}
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUXNOIRIA - Experiencia Gastronómica de Lujo</title>
 
-<main>
-    <section class="row" aria-labelledby="aspnetTitle">
-        <h1 id="title">ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #d4af37; /* Oro más lujoso */
+            --dark-color: #121212;
+            --secondary-dark: #1d1d1d;
+            --accent-color: #c09b5b; /* Dorado más cálido para acentos */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            background-color: var(--dark-color);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Cormorant Garamond', serif;
+            letter-spacing: 1px;
+        }
+
+        .section-padding {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+            .section-title:after {
+                content: "";
+                position: absolute;
+                left: 50%;
+                bottom: -15px;
+                width: 50px;
+                height: 2px;
+                background-color: var(--primary-color);
+                transform: translateX(-50%);
+            }
+
+            .section-title h2 {
+                font-size: 16px;
+                font-weight: 500;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                color: var(--primary-color);
+                margin-bottom: 10px;
+            }
+
+            .section-title p {
+                font-size: 40px;
+                font-weight: 700;
+                color: #fff;
+                font-family: 'Cormorant Garamond', serif;
+            }
+
+        /* Header */
+        .navbar {
+            padding: 20px 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+            .navbar.scrolled {
+                padding: 10px 0;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            }
+
+        .navbar-brand {
+            color: var(--primary-color);
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'Cormorant Garamond', serif;
+            letter-spacing: 2px;
+            transition: color 0.3s;
+        }
+
+            .navbar-brand:hover {
+                color: #fff;
+            }
+
+        .navbar-nav .nav-link {
+            color: #fff;
+            font-size: 14px;
+            padding: 10px 18px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+            .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
+                color: var(--primary-color);
+            }
+
+        .book-table-btn, .btn-menu, .btn-book, .contact-form .btn-submit {
+            background-color: var(--primary-color);
+            color: var(--dark-color);
+            border-radius: 0;
+            padding: 12px 30px;
+            font-weight: 600;
+            border: 2px solid var(--primary-color);
+            letter-spacing: 1px;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+            .book-table-btn:hover, .btn-menu:hover, .btn-book:hover, .contact-form .btn-submit:hover {
+                background-color: transparent;
+                color: var(--primary-color);
+            }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=2070&q=80');
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+        }
+
+            .hero h1 {
+                font-size: 60px;
+                font-weight: 700;
+                color: #fff;
+                margin-bottom: 20px;
+                line-height: 1.2;
+            }
+
+                .hero h1 span {
+                    color: var(--primary-color);
+                }
+
+            .hero p {
+                font-size: 22px;
+                margin: 20px 0 40px;
+                font-weight: 300;
+            }
+
+        /* About Section */
+        .about {
+            background-color: var(--secondary-dark);
+            position: relative;
+        }
+
+            .about:before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 30%;
+                height: 100%;
+                background-color: rgba(212, 175, 55, 0.05);
+                z-index: 0;
+            }
+
+        .about-img {
+            border-radius: 0;
+            box-shadow: 15px 15px 0px -5px var(--accent-color);
+            position: relative;
+        }
+
+        .about-content {
+            position: relative;
+            z-index: 1;
+        }
+
+            .about-content h3 {
+                color: var(--primary-color);
+                font-size: 32px;
+                margin-bottom: 20px;
+            }
+
+            .about-content ul {
+                list-style: none;
+                padding-left: 0;
+            }
+
+                .about-content ul li {
+                    padding: 12px 0;
+                    display: flex;
+                    align-items: flex-start;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                }
+
+                .about-content ul i {
+                    color: var(--primary-color);
+                    font-size: 20px;
+                    margin-right: 15px;
+                }
+
+        /* Menu Section */
+        .menu-item {
+            background-color: var(--secondary-dark);
+            border-radius: 0;
+            margin-bottom: 40px;
+            overflow: hidden;
+            transition: 0.3s;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+            .menu-item:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
+                border-color: var(--primary-color);
+            }
+
+        .menu-img {
+            height: 250px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .menu-content {
+            padding: 25px;
+        }
+
+            .menu-content h5 {
+                color: var(--primary-color);
+                font-weight: 600;
+                font-size: 22px;
+                margin-bottom: 15px;
+            }
+
+            .menu-content .price {
+                font-size: 26px;
+                font-weight: 700;
+                color: #fff;
+                font-family: 'Cormorant Garamond', serif;
+            }
+
+        /* Reservation Section */
+        .reservation-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1559329007-40df8a9345d8?auto=format&fit=crop&w=2070&q=80') center no-repeat;
+            z-index: -1;
+        }
+
+        .reservation-form {
+            max-width: 700px;
+            background: rgba(29, 29, 29, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 0;
+            padding: 40px !important;
+        }
+
+        .form-floating label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            color: white;
+            border-radius: 0;
+            padding: 12px 15px;
+            height: calc(3.5rem + 2px);
+        }
+
+            .form-control:focus, .form-select:focus {
+                background: rgba(255, 255, 255, 0.15);
+                color: white;
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
+            }
+
+            .form-control::placeholder {
+                color: rgba(255, 255, 255, 0.5);
+            }
+
+        /* Estilo para los inputs readonly */
+        input[readonly] {
+            background: rgba(29, 29, 29, 0.5) !important;
+            border-color: rgba(212, 175, 55, 0.1) !important;
+            color: rgba(255, 255, 255, 0.6) !important;
+            cursor: not-allowed;
+        }
+
+        /* Estilo para el select de mesas */
+        #mesaId {
+            color: white;
+            background-color: rgba(29, 29, 29, 0.8);
+        }
+
+            #mesaId option {
+                color: white;
+                background-color: var(--secondary-dark);
+            }
+
+        .reservation-btn {
+            background-color: var(--primary-color) !important;
+            color: var(--dark-color) !important;
+            font-weight: bold;
+            border-radius: 0;
+            padding: 15px 40px !important;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary-color) !important;
+        }
+
+            .reservation-btn:hover {
+                background-color: transparent !important;
+                color: var(--primary-color) !important;
+            }
+
+        /* Footer */
+        .footer {
+            background-color: var(--secondary-dark);
+            padding: 70px 0 30px;
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+            .footer h3, .footer-links h4 {
+                color: var(--primary-color);
+                font-size: 24px;
+                margin-bottom: 25px;
+            }
+
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+
+            .footer-links ul li {
+                margin-bottom: 15px;
+            }
+
+                .footer-links ul li a {
+                    color: rgba(255, 255, 255, 0.8);
+                    text-decoration: none;
+                    transition: 0.3s;
+                    position: relative;
+                    padding-left: 15px;
+                }
+
+                    .footer-links ul li a:before {
+                        content: "→";
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        color: var(--primary-color);
+                        opacity: 0;
+                        transition: all 0.3s ease;
+                    }
+
+                    .footer-links ul li a:hover {
+                        color: var(--primary-color);
+                        padding-left: 20px;
+                    }
+
+                        .footer-links ul li a:hover:before {
+                            opacity: 1;
+                        }
+
+        .footer-social a {
+            color: #fff;
+            font-size: 20px;
+            margin-right: 15px;
+            transition: 0.3s;
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            background-color: rgba(212, 175, 55, 0.1);
+            border-radius: 50%;
+        }
+
+            .footer-social a:hover {
+                color: var(--dark-color);
+                background-color: var(--primary-color);
+                transform: translateY(-5px);
+            }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">LUXNOIRIA</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#hero">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">Nosotros</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#menu">Menú</a></li>
+                    
+                </ul>
+                <a href="#reservation" class="btn book-table-btn ms-4 d-none d-lg-block">Reservar Mesa</a>
+                <a href="/Acceso/CerrarSesion" class="btn ms-3 d-none d-lg-block" title="Cerrar sesión"
+                   onclick="return confirm('¿Está seguro que desea cerrar sesión?');">
+                    <i class="bi bi-box-arrow-right fs-4 ms-3" style="color: var(--primary-color);" title="Cerrar sesión"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h1>Bienvenido a <span>LUXNOIRIA</span></h1>
+                    <p>Sirviendo experiencias gastronómicas inolvidables desde 2005</p>
+                    <div class="mt-5">
+                        <a href="#menu" class="btn btn-menu me-3">Nuestro Menú</a>
+                        <a href="#reservation" class="btn btn-book">Reservar Mesa</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
-    <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Getting started</h2>
-            <p>
-                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-                enables a clean separation of concerns and gives you full control over markup
-                for enjoyable, agile development.
-            </p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
-    </div>
-</main>
+    <!-- About Section -->
+    <section id="about" class="about section-padding">
+        <div class="container">
+            <div class="section-title text-center">
+                <h2>Nosotros</h2>
+                <p>Conoce Nuestra Historia</p>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-lg-6 text-center mb-4 mb-lg-0">
+                    <img src="https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=2070&q=80" class="img-fluid about-img" alt="Restaurante">
+                </div>
+                <div class="col-lg-6 about-content">
+                    <h3>Nuestra pasión por la gastronomía</h3>
+                    <p class="fst-italic mb-4">Con más de 15 años de experiencia, en LUXNOIRIA nos dedicamos a crear platos excepcionales utilizando ingredientes locales de la más alta calidad.</p>
+                    <ul>
+                        <li><i class="bi bi-check2-all"></i> Ingredientes frescos de productores locales seleccionados.</li>
+                        <li><i class="bi bi-check2-all"></i> Chefs expertos graduados de las mejores escuelas culinarias.</li>
+                        <li><i class="bi bi-check2-all"></i> Ambiente elegante y servicio personalizado de primera clase.</li>
+                    </ul>
+                    <p class="mt-4">Nuestra filosofía es simple: comida excepcional, servicio atento y un ambiente que invita a disfrutar cada momento con una experiencia gastronómica inolvidable.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Menú -->
+    <section id="menu" class="menu section-padding">
+        <div class="container">
+            <div class="section-title text-center">
+                <h2>Gastronomía</h2>
+                <p>Nuestros Platos Insignia</p>
+            </div>
+            <div class="row">
+                <!-- Sopa de Langosta -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="menu-item text-center">
+                        <img src="https://images.unsplash.com/photo-1702737940705-ee75ee0481e6?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="menu-img" alt="Sopa de Langosta">
+                        <div class="menu-content">
+                            <h5>Sopa de Langosta</h5>
+                            <p>Cremosa sopa con trozos de langosta fresca, acompañada de hierbas aromáticas y un toque de brandy.</p>
+                            <div class="price">$70.000</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Filete Mignon -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="menu-item text-center">
+                        <img src="https://images.unsplash.com/photo-1614597134736-a8e0616933d5?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="menu-img" alt="Filete Mignon">
+                        <div class="menu-content">
+                            <h5>Filete Mignon</h5>
+                            <p>Jugoso filete mignon cocido a la perfección, servido con una reducción de vino tinto y trufa negra.</p>
+                            <div class="price">$90.000</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Pasta Alfredo -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="menu-item text-center">
+                        <img src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=1532&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="menu-img" alt="Pasta Alfredo">
+                        <div class="menu-content">
+                            <h5>Pasta Alfredo</h5>
+                            <p>Fettuccine en una rica y cremosa salsa Alfredo, con un toque de parmesano añejado y trufa.</p>
+                            <div class="price">$60.000</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Ensalada César -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="menu-item text-center">
+                        <img src="https://images.unsplash.com/photo-1551248429-40975aa4de74?q=80&w=1380&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="menu-img" alt="Ensalada César">
+                        <div class="menu-content">
+                            <h5>Ensalada César</h5>
+                            <p>Lechuga romana fresca, crutones artesanales y aderezo César casero con anchoas y queso parmesano.</p>
+                            <div class="price">$40.000</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Salmón a la Parrilla -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="menu-item text-center">
+                        <img src="https://images.unsplash.com/photo-1467003909585-2f8a72700288?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="menu-img" alt="Salmón a la Parrilla">
+                        <div class="menu-content">
+                            <h5>Salmón a la Parrilla</h5>
+                            <p>Salmón fresco a la parrilla con un glaseado de miel y mostaza Dijon sobre risotto de limón.</p>
+                            <div class="price">$50.000</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarta de Chocolate -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="menu-item text-center">
+                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=1389&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="menu-img" alt="Tarta de Chocolate">
+                        <div class="menu-content">
+                            <h5>Tarta de Chocolate</h5>
+                            <p>Deliciosa tarta de chocolate negro con un centro fundido de caramelo, servida con helado de vainilla artesanal.</p>
+                            <div class="price">$56.000</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .menu-item {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .menu-item:hover {
+                transform: scale(1.05);
+                box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            }
+
+        .menu-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .price {
+            font-weight: bold;
+            color: #e74c3c;
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+    </style>
+    <style>
+        /* Fondo con imágenes */
+        .reservation-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://source.unsplash.com/1600x900/?restaurant,table') center no-repeat;
+            filter: brightness(40%) blur(2px);
+            z-index: -1;
+        }
+
+        .reservation-form {
+            max-width: 600px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+        }
+
+            .form-control::placeholder {
+                color: rgba(255, 255, 255, 0.7);
+            }
+
+            .form-control:focus {
+                background: rgba(255, 255, 255, 0.3);
+                color: white;
+                box-shadow: none;
+            }
+
+        /* Estilo para los inputs readonly */
+        input[readonly] {
+            background: rgba(200, 200, 200, 0.3) !important;
+            cursor: not-allowed;
+        }
+
+        .reservation-btn {
+            background-color: #28A745 !important;
+            color: white !important;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+            .reservation-btn:hover {
+                background-color: #218838 !important;
+            }
+    </style>
+    <!-- Reservation Section -->
+    <section id="reservation" class="section-padding position-relative">
+        <div class="reservation-bg"></div>
+        <div class="container position-relative">
+            <div class="section-title text-center">
+                <h2>Reservación</h2>
+                <p>Reserva una Mesa en Nuestro Restaurante</p>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <form id="reservationForm" action="@Url.Action("Nueva", "Home")" method="post" class="reservation-form shadow-lg">
+                    @Html.AntiForgeryToken()
+                    <div class="row g-3">
+                        <!-- Reservation details -->
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="cantidadPersonas" name="CantidadPersonas" placeholder="Número de Personas" required min="1" max="20">
+                                <label for="cantidadPersonas">Número de Personas</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select class="form-control" id="mesaId" name="MesaId" required>
+                                    <option value="">Seleccione una mesa</option>
+                                </select>
+                                <label for="mesaId">Mesa</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="date" class="form-control" id="fechaReserva" name="FechaReserva" required>
+                                <label for="fechaReserva">Fecha de Reserva</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="time" class="form-control" id="horaReserva" name="HoraReserva" required>
+                                <label for="horaReserva">Hora de Reserva</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-floating mb-3">
+                                <textarea class="form-control" id="mensaje" name="MensajeEspecial" rows="4" placeholder="Mensaje Especial" style="height: 100px"></textarea>
+                                <label for="mensaje">Mensaje Especial</label>
+                            </div>
+                        </div>
+
+                        <!-- Validation messages -->
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="col-12">
+                                <div class="alert alert-danger">
+                                    @Html.ValidationSummary(true)
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Result messages -->
+                        <div class="col-12">
+                            <div id="reservationResult" class="alert alert-info d-none" role="alert"></div>
+                        </div>
+
+                        <!-- TempData messages -->
+                        @if (TempData["Error"] != null)
+                        {
+                            <div class="col-12">
+                                <div class="alert alert-danger">@TempData["Error"]</div>
+                            </div>
+                        }
+                        @if (TempData["Success"] != null)
+                        {
+                            <div class="col-12">
+                                <div class="alert alert-success">@TempData["Success"]</div>
+                            </div>
+                        }
+
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn reservation-btn mt-3">
+                                <i class="bi bi-calendar-check me-2"></i>Reservar Ahora
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+
+    @section scripts {
+        <script>
+        // Add this to your main script block or external JS file
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar si el usuario está logueado pero sin redirigir inmediatamente
+            const clienteId = '@Session["ClienteId"]';
+
+            // Redirigir si el cliente no está logueado
+            if (!clienteId || clienteId === '' || clienteId === '0') {
+                window.location.href = '/Acceso/Index';
+                return;
+            }
+
+            // Initialize date picker with today's date
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const formattedDate = `${yyyy}-${mm}-${dd}`;
+
+            const fechaReserva = document.getElementById('fechaReserva');
+            if (fechaReserva) {
+                fechaReserva.setAttribute('min', formattedDate);
+                fechaReserva.value = formattedDate;
+                fechaReserva.addEventListener('change', cargarMesasPorCapacidad);
+            }
+
+            // Handle time validation
+            const horaReserva = document.getElementById('horaReserva');
+            if (horaReserva) {
+                // Establecer hora predeterminada (14:00)
+                horaReserva.value = '14:00';
+
+                horaReserva.addEventListener('change', function() {
+                    const selectedTime = this.value;
+                    if (!selectedTime) return;
+
+                    const [hours, minutes] = selectedTime.split(':');
+
+                    // Validate business hours (12:00 to 23:00)
+                    if (parseInt(hours) < 12 || parseInt(hours) >= 23) {
+                        alert('Lo sentimos, nuestro horario de reservas es de 12:00 a 23:00.');
+                        this.value = '14:00';
+                    }
+                });
+            }
+
+            // Handle quantity changes
+            const cantidadPersonas = document.getElementById('cantidadPersonas');
+            if (cantidadPersonas) {
+                // Establecer valor predeterminado
+                cantidadPersonas.value = '2';
+                cantidadPersonas.addEventListener('change', cargarMesasPorCapacidad);
+
+                // Cargar mesas iniciales
+                setTimeout(cargarMesasPorCapacidad, 500);
+            }
+
+            // Handle form submission
+            const reservationForm = document.getElementById('reservationForm');
+            if (reservationForm) {
+                reservationForm.addEventListener('submit', handleReservationSubmit);
+            }
+        });
+
+        // Function to load available tables based on capacity
+        function cargarMesasPorCapacidad() {
+            const cantidadPersonas = document.getElementById('cantidadPersonas').value;
+            const fechaSeleccionada = document.getElementById('fechaReserva').value;
+            const mesaIdSelect = document.getElementById('mesaId');
+
+            // Verify input
+            if (!cantidadPersonas || cantidadPersonas < 1) {
+                mesaIdSelect.innerHTML = '<option value="">Seleccione una mesa</option>';
+                return;
+            }
+
+            // Show loading indicator
+            mesaIdSelect.innerHTML = '<option value="">Cargando mesas disponibles...</option>';
+
+            // Fetch available tables using Fetch API instead of jQuery
+            fetch(`/Home/ObtenerMesasDisponibles?capacidad=${cantidadPersonas}&fecha=${fechaSeleccionada}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.json();
+                })
+                .then(mesas => {
+                    // Clear table selector
+                    mesaIdSelect.innerHTML = '<option value="">Seleccione una mesa</option>';
+
+                    // Add available tables to selector
+                    if (mesas && mesas.length > 0) {
+                        mesas.forEach(mesa => {
+                            const option = document.createElement('option');
+                            option.value = mesa.Id;
+                            option.textContent = `Mesa ${mesa.NumeroMesa} - ${mesa.Ubicacion} (Capacidad: ${mesa.Capacidad})`;
+                            mesaIdSelect.appendChild(option);
+                        });
+                    } else {
+                        const option = document.createElement('option');
+                        option.value = "";
+                        option.disabled = true;
+                        option.textContent = "No hay mesas disponibles para esa cantidad de personas";
+                        mesaIdSelect.appendChild(option);
+                    }
+                })
+                .catch(error => {
+                    mesaIdSelect.innerHTML = '<option value="">Error al cargar mesas</option>';
+                    alert('Ha ocurrido un error al cargar las mesas disponibles. Por favor, intente nuevamente.');
+                    console.error('Error:', error);
+                });
+        }
+
+        // Modificar la función handleReservationSubmit para verificar datos del cliente
+        function handleReservationSubmit(e) {
+            e.preventDefault();
+
+            // Check if client is logged in
+            const clienteId = '@Session["ClienteId"]'; // This will be replaced by Razor
+            if (!clienteId || clienteId === '' || clienteId === '0') {
+                window.location.href = '/Acceso/Index';
+                return;
+            }
+
+            // Show spinner on button
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...';
+            submitButton.disabled = true;
+
+            // Check if a table is selected
+            const mesaId = document.getElementById('mesaId').value;
+            if (!mesaId) {
+                alert('Por favor seleccione una mesa disponible');
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+                return;
+            }
+
+            // Submit form using Fetch API
+            const formData = new FormData(this);
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('reservationResult');
+                resultDiv.classList.remove('d-none', 'alert-warning', 'alert-danger', 'alert-success');
+
+                if (data.success) {
+                    resultDiv.classList.add('alert-success');
+                    resultDiv.innerHTML = '<i class="bi bi-check-circle"></i> ' + data.message;
+
+                    // Clear form
+                    document.getElementById('mensaje').value = '';
+                    document.getElementById('cantidadPersonas').value = '2';
+                    document.getElementById('mesaId').innerHTML = '<option value="">Seleccione una mesa</option>';
+
+                    // Optional: redirect after success
+                    setTimeout(() => {
+                        window.location.href = '/Home/Index';
+                    }, 3000);
+                } else {
+                    resultDiv.classList.add('alert-warning');
+                    resultDiv.innerHTML = '<i class="bi bi-exclamation-triangle"></i> ' + data.message;
+                }
+            })
+            .catch(error => {
+                const resultDiv = document.getElementById('reservationResult');
+                resultDiv.classList.remove('d-none', 'alert-warning', 'alert-success');
+                resultDiv.classList.add('alert-danger');
+                resultDiv.innerHTML = '<i class="bi bi-x-circle"></i> Ha ocurrido un error al procesar tu reserva. Por favor, intenta más tarde.';
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                // Restore button
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+            });
+        }
+        </script>
+    }
+
+</body>
+</html>
